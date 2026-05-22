@@ -1,0 +1,67 @@
+BasedOnStyle: Google
+
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ContinuationIndentWidth: 4
+AccessModifierOffset: -1
+NamespaceIndentation: All
+
+ColumnLimit: 80
+
+AllowShortFunctionsOnASingleLine: InlineOnly
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: true
+
+BreakBeforeBraces: Attach
+BreakConstructorInitializers: AfterColon
+BreakInheritanceList: AfterColon
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeTernaryOperators: true
+
+BraceWrapping:
+  AfterFunction: false
+  AfterClass: false
+  AfterControlStatement: false
+  AfterEnum: false
+  AfterStruct: false
+  AfterNamespace: false
+
+SpaceAfterCStyleCast: true
+SpaceBeforeParens: ControlStatements
+SpaceBeforeAssignmentOperators: true
+SpaceInEmptyParentheses: false
+SpacesInParentheses: false
+SpacesInContainerLiterals: false
+SpacesInAngles: false
+
+PointerAlignment: Left
+DerivePointerAlignment: false
+
+AlignAfterOpenBracket: Align
+AlignOperands: true
+AlignTrailingComments: true
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+
+ConstructorInitializerIndentWidth: 4
+Cpp11BracedListStyle: true
+FixNamespaceComments: true
+
+IncludeBlocks: Regroup
+SortIncludes: true
+IncludeCategories:
+  - Regex: '^<.*>'
+    Priority: 1
+  - Regex: '^".*"'
+    Priority: 2
+
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1
+
+PenaltyBreakBeforeFirstCallParameter: 0
+PenaltyReturnTypeOnItsOwnLine: 60
+PenaltyBreakComment: 300
+PenaltyBreakString: 1000

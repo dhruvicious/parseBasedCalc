@@ -1,0 +1,19 @@
+# Compiled Object files
+*.o
+
+# Executable target
+calculator
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Zed Editor
+.zed/
+
+# C++ Language Server (Clangd)
+.cache/
+compile_commands.json
+.clangd/
