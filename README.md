@@ -21,6 +21,20 @@ make
 ./calculator
 ```
 
+Or use Docker:
+
+Build the Docker image:
+
+```sh
+docker build -t calculator .
+```
+
+Run the container:
+
+```sh
+docker run -it calculator
+```
+
 To exit the calculator, type:
 
 ```sh
