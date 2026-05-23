@@ -4,7 +4,18 @@
 #include <string>
 #include <vector>
 
-enum TokenType { NUMBER, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, END };
+enum TokenType {
+    NUMBER,
+    IDENTIFIER,
+    PLUS,
+    MINUS,
+    MUL,
+    DIV,
+    POW,
+    LPAREN,
+    RPAREN,
+    END
+};
 
 struct Token {
     TokenType   type;

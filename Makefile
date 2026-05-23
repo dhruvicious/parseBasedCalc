@@ -4,8 +4,7 @@ LDFLAGS = -lreadline
 
 SRC = src/main.cpp \
       src/tokenizer.cpp \
-      src/parser.cpp \
-      src/evaluator.cpp
+      src/parser.cpp
 
 OBJ = $(SRC:.cpp=.o)
 
