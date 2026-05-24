@@ -23,4 +23,4 @@ WORKDIR /app
 
 COPY --from=builder /app/calculator .
 
-CMD [ "./calculator" ]
+ENTRYPOINT [ "./calculator" ]
