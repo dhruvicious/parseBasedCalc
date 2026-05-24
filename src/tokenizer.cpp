@@ -6,6 +6,23 @@
 #include <string>
 #include <vector>
 
+const char* tokenTypeName(TokenType type) {
+    switch (type) {
+        case NUMBER: return "NUMBER";
+        case IDENTIFIER: return "IDENTIFIER";
+        case PLUS: return "PLUS";
+        case MINUS: return "MINUS";
+        case MUL: return "MUL";
+        case DIV: return "DIV";
+        case POW: return "POW";
+        case LPAREN: return "LPAREN";
+        case RPAREN: return "RPAREN";
+        case END: return "END";
+    }
+
+    return "UNKNOWN";
+}
+
 std::vector<Token> tokenize(const std::string& input) {
     std::vector<Token> tokens;
 
@@ -48,7 +65,8 @@ std::vector<Token> tokenize(const std::string& input) {
 
                 if (input[i] == '.') {
                     if (seenDecimal) {
-                        throw std::runtime_error("Invalid number: " + number + ".");
+                        throw std::runtime_error("Invalid number: " + number
+                                                 + ".");
                     }
                     seenDecimal = true;
                     number += input[i++];

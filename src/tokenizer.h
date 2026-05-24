@@ -22,6 +22,7 @@ struct Token {
     std::string value;
 };
 
+const char*        tokenTypeName(TokenType type);
 std::vector<Token> tokenize(const std::string& input);
 
 #endif

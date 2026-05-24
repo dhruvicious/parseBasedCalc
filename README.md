@@ -24,6 +24,18 @@ make
 ./calculator
 ```
 
+To show the tokens produced by the lexer before evaluation, run:
+
+```sh
+./calculator --tokens
+```
+
+To show the abstract syntax tree produced by the parser before evaluation, run:
+
+```sh
+./calculator --ast
+```
+
 Or use Docker:
 
 Build the Docker image:

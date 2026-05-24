@@ -57,11 +57,11 @@ std::unique_ptr<ASTNode> Parser::expr() {
         if (op.type == PLUS) {
             node = std::make_unique<BinOpNode>(
                 std::move(node), term(),
-                [](double a, double b) { return a + b; });
+                [](double a, double b) { return a + b; }, "+");
         } else {
             node = std::make_unique<BinOpNode>(
                 std::move(node), term(),
-                [](double a, double b) { return a - b; });
+                [](double a, double b) { return a - b; }, "-");
         }
     }
     return node;
@@ -76,15 +76,17 @@ std::unique_ptr<ASTNode> Parser::term() {
         if (op.type == MUL) {
             node = std::make_unique<BinOpNode>(
                 std::move(node), unary(),
-                [](double a, double b) { return a * b; });
+                [](double a, double b) { return a * b; }, "*");
         } else {
             node = std::make_unique<BinOpNode>(
-                std::move(node), unary(), [](double a, double b) {
+                std::move(node), unary(),
+                [](double a, double b) {
                     if (b == 0.0) {
                         throw std::runtime_error("Division by zero");
                     }
                     return a / b;
-                });
+                },
+                "/");
         }
     }
     return node;
@@ -96,7 +98,7 @@ std::unique_ptr<ASTNode> Parser::unary() {
     if (token.type == MINUS) {
         eat(MINUS);
         return std::make_unique<UnaryOpNode>(
-            unary(), [](double a) { return -a; });
+            unary(), [](double a) { return -a; }, "-");
     }
 
     if (token.type == PLUS) {
@@ -114,7 +116,7 @@ std::unique_ptr<ASTNode> Parser::power() {
         eat(POW);
         node = std::make_unique<BinOpNode>(
             std::move(node), unary(),
-            [](double a, double b) -> double { return std::pow(a, b); });
+            [](double a, double b) -> double { return std::pow(a, b); }, "^");
     }
     return node;
 }
@@ -141,7 +143,7 @@ std::unique_ptr<ASTNode> Parser::primary() {
             eat(RPAREN);
 
             return std::make_unique<UnaryOpNode>(
-                std::move(argNode), functions[name]);
+                std::move(argNode), functions[name], name);
         }
 
         throw std::runtime_error(
