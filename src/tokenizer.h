@@ -20,6 +20,7 @@ enum TokenType {
 struct Token {
     TokenType   type;
     std::string value;
+    std::size_t index;
 };
 
 const char*        tokenTypeName(TokenType type);

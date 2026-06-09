@@ -11,6 +11,13 @@
 #include "ast.h"
 #include "tokenizer.h"
 
+class ParseError : public std::runtime_error {
+   public:
+    std::size_t index;
+    ParseError(const std::string& msg, std::size_t idx) :
+        std::runtime_error(msg), index(idx) {}
+};
+
 class Parser {
    private:
     std::vector<Token> tokens;

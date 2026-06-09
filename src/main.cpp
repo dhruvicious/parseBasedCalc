@@ -1,6 +1,6 @@
-#include <cmath>
 #include <cstdlib>
-#include <exception>
+#include <curl/curl.h>
+#include <iomanip>
 #include <iostream>
 #include <memory>
 #include <readline/history.h>
@@ -9,13 +9,15 @@
 #include <vector>
 
 #include "ast.h"
+#include "converter.h"
+#include "currency_fetcher.h"
 #include "parser.h"
 #include "tokenizer.h"
 
 namespace {
-
     void printUsage(const char* programName) {
-        std::cout << "Usage: " << programName << " [--tokens|-t] [--ast|-a]\n";
+        std::cout << "Usage: " << programName
+                  << " [--tokens|-t] [--ast|-a] [--convert|-c]\n";
     }
 
     void printTokens(const std::vector<Token>& tokens) {
@@ -28,20 +30,24 @@ namespace {
             std::cout << '\n';
         }
     }
-
 }  // namespace
 
 int main(int argc, char* argv[]) {
-    bool showTokens = false;
-    bool showAst    = false;
+    bool showTokens  = false;
+    bool showAst     = false;
+    bool convertMode = false;
+
+    curl_global_init(CURL_GLOBAL_DEFAULT);
 
     for (int i = 1; i < argc; i++) {
         std::string arg = argv[i];
-        if (arg == "--tokens" || arg == "-t") {
+        if (arg == "--tokens" || arg == "-t")
             showTokens = true;
-        } else if (arg == "--ast" || arg == "-a") {
+        else if (arg == "--ast" || arg == "-a")
             showAst = true;
-        } else if (arg == "--help" || arg == "-h") {
+        else if (arg == "--convert" || arg == "-c")
+            convertMode = true;
+        else if (arg == "--help" || arg == "-h") {
             printUsage(argv[0]);
             return 0;
         } else {
@@ -51,24 +57,44 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    if (convertMode) {
+        std::cout << "Fetching live currency rates...\n";
+        auto liveRates = fetchCurrencyRates();
+
+        updateConversionRates(liveRates, "currency");
+
+        std::cout << "Successfully loaded " << liveRates.size()
+                  << " live currencies.\n\n";
+
+        printAvailableUnits();
+        std::cout << "\n";
+    }
+
     while (true) {
-        char* line = readline("calc > ");
+        const char* prompt = convertMode ? "convert > " : "calc > ";
+        char*       line   = readline(prompt);
+
         if (!line) break;
         std::string input(line);
         std::free(line);
+
         if (input == "exit") break;
         if (input.empty()) continue;
-        if (!input.empty()) add_history(input.c_str());
+        add_history(input.c_str());
 
         try {
             auto tokens = tokenize(input);
 
-            if (showTokens) {
-                printTokens(tokens);
+            std::string toUnit;
+            bool        isConversion = false;
+
+            if (convertMode) {
+                isConversion = extractConversion(tokens, toUnit);
             }
 
-            Parser parser(tokens);
+            if (showTokens) printTokens(tokens);
 
+            Parser                   parser(tokens);
             std::unique_ptr<ASTNode> tree = parser.parse();
 
             if (showAst) {
@@ -78,15 +104,22 @@ int main(int argc, char* argv[]) {
 
             double result = tree->evaluate();
 
-            if (std::abs(result) < 1e-10) {
-                result = 0.0;
+            if (isConversion) {
+                printConversionResult(result, toUnit);
+            } else {
+                std::cout << "= " << std::setprecision(10) << result << '\n';
             }
 
-            std::cout << "= " << result << '\n';
-        } catch (const std::exception& e) {
+        } catch (const ParseError& e) {
+            std::cout << input << '\n';
+            std::cout << std::string(e.index, ' ') << "^\n";
             std::cout << "Error: " << e.what() << '\n';
+        } catch (const std::runtime_error& e) {
+            std::cout << "Conversion Error: " << e.what() << '\n';
+        } catch (const std::exception& e) {
+            std::cout << "Unexpected Error: " << e.what() << '\n';
         }
     }
-
+    curl_global_cleanup();
     return 0;
 }

@@ -24,7 +24,9 @@ Parser::Parser(const std::vector<Token>& t) : tokens(t), pos(0) {
 
 const Token& Parser::currentToken() const {
     if (pos >= tokens.size()) {
-        throw std::runtime_error("Unexpected end of input");
+        // Fallback index in case of catastrophic token sequence failure
+        std::size_t idx = tokens.empty() ? 0 : tokens.back().index;
+        throw ParseError("Unexpected end of input", idx);
     }
 
     return tokens[pos];
@@ -34,16 +36,19 @@ void Parser::eat(TokenType type) {
     if (currentToken().type == type) {
         pos++;
     } else {
-        throw std::runtime_error(
-            "Unexpected Token:: The Expression Contains an Invalid Token");
+        throw ParseError(
+            "Unexpected Token: Expected a different token but found '"
+                + currentToken().value + "'",
+            currentToken().index);
     }
 }
 
 std::unique_ptr<ASTNode> Parser::parse() {
     auto node = expr();
     if (currentToken().type != END) {
-        throw std::runtime_error("Unexpected token at end of expression: "
-                                 + currentToken().value);
+        throw ParseError("Unexpected token at end of expression: '"
+                             + currentToken().value + "'",
+                         currentToken().index);
     }
     return node;
 }
@@ -82,6 +87,8 @@ std::unique_ptr<ASTNode> Parser::term() {
                 std::move(node), unary(),
                 [](double a, double b) {
                     if (b == 0.0) {
+                        // Math evaluation error, standard runtime_error is fine
+                        // here
                         throw std::runtime_error("Division by zero");
                     }
                     return a / b;
@@ -146,10 +153,9 @@ std::unique_ptr<ASTNode> Parser::primary() {
                 std::move(argNode), functions[name], name);
         }
 
-        throw std::runtime_error(
-            "Unknown Identifier: Identifier not part of the calculator's "
-            "syntax: "
-            + name);
+        throw ParseError("Unknown Identifier: '" + name
+                             + "' is not part of the calculator's syntax",
+                         token.index);
     }
 
     if (token.type == LPAREN) {
@@ -158,5 +164,8 @@ std::unique_ptr<ASTNode> Parser::primary() {
         eat(RPAREN);
         return node;
     }
-    throw std::runtime_error("Invalid syntax");
+
+    // The ultimate syntax failure fallback!
+    throw ParseError(
+        "Invalid syntax: unexpected token '" + token.value + "'", token.index);
 }

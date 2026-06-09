@@ -35,6 +35,7 @@ std::vector<Token> tokenize(const std::string& input) {
             i++;
             continue;
         }
+        std::size_t startIdx = i;
 
         if (std::isalpha(uc)) {
             std::string ident;
@@ -45,7 +46,7 @@ std::vector<Token> tokenize(const std::string& input) {
                 }
                 ident += input[i++];
             }
-            tokens.push_back({IDENTIFIER, ident});
+            tokens.push_back({IDENTIFIER, ident, startIdx});
             continue;
         }
 
@@ -80,24 +81,24 @@ std::vector<Token> tokenize(const std::string& input) {
                 throw std::runtime_error("Invalid number: " + number);
             }
 
-            tokens.push_back({NUMBER, number});
+            tokens.push_back({NUMBER, number, startIdx});
             continue;
         }
 
         switch (c) {
-            case '+': tokens.push_back({PLUS, "+"}); break;
-            case '-': tokens.push_back({MINUS, "-"}); break;
-            case '*': tokens.push_back({MUL, "*"}); break;
-            case '/': tokens.push_back({DIV, "/"}); break;
-            case '^': tokens.push_back({POW, "^"}); break;
-            case '(': tokens.push_back({LPAREN, "("}); break;
-            case ')': tokens.push_back({RPAREN, ")"}); break;
+            case '+': tokens.push_back({PLUS, "+", startIdx}); break;
+            case '-': tokens.push_back({MINUS, "-", startIdx}); break;
+            case '*': tokens.push_back({MUL, "*", startIdx}); break;
+            case '/': tokens.push_back({DIV, "/", startIdx}); break;
+            case '^': tokens.push_back({POW, "^", startIdx}); break;
+            case '(': tokens.push_back({LPAREN, "(", startIdx}); break;
+            case ')': tokens.push_back({RPAREN, ")", startIdx}); break;
             default:
                 throw std::runtime_error("Unexpected character: "
                                          + std::string(1, c));
         }
         i++;
     }
-    tokens.push_back({END, ""});
+    tokens.push_back({END, "", i});
     return tokens;
 }
