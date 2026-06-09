@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Still keeping layer optimization by splitting COPY
+
 COPY Makefile ./
 COPY src/ ./src/
 
@@ -16,7 +16,7 @@ RUN make -j$(nproc)
 
 FROM ubuntu:24.04
 
-# Added ca-certificates to the runtime stage
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libreadline8 \
     libcurl4 \
@@ -26,7 +26,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Standard copy and chown (no --link)
 COPY --from=builder --chown=ubuntu:ubuntu /app/calculator .
 
 USER ubuntu

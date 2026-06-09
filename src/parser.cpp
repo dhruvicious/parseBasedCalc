@@ -24,7 +24,6 @@ Parser::Parser(const std::vector<Token>& t) : tokens(t), pos(0) {
 
 const Token& Parser::currentToken() const {
     if (pos >= tokens.size()) {
-        // Fallback index in case of catastrophic token sequence failure
         std::size_t idx = tokens.empty() ? 0 : tokens.back().index;
         throw ParseError("Unexpected end of input", idx);
     }
@@ -87,8 +86,6 @@ std::unique_ptr<ASTNode> Parser::term() {
                 std::move(node), unary(),
                 [](double a, double b) {
                     if (b == 0.0) {
-                        // Math evaluation error, standard runtime_error is fine
-                        // here
                         throw std::runtime_error("Division by zero");
                     }
                     return a / b;
@@ -165,7 +162,6 @@ std::unique_ptr<ASTNode> Parser::primary() {
         return node;
     }
 
-    // The ultimate syntax failure fallback!
     throw ParseError(
         "Invalid syntax: unexpected token '" + token.value + "'", token.index);
 }

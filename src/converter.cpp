@@ -68,7 +68,6 @@ bool extractConversion(std::vector<Token>& tokens, std::string& toUnit) {
 
     std::string targetCategory = units[toUnit].category;
 
-    // 3. Token Expansion
     std::vector<Token> expandedTokens;
     for (const auto& token : tokens) {
         if (token.type == IDENTIFIER
@@ -79,7 +78,6 @@ bool extractConversion(std::vector<Token>& tokens, std::string& toUnit) {
                 throw std::runtime_error("Dimension mismatch");
             }
 
-            // Retroactive grouping for precedence bypass
             if (!expandedTokens.empty()
                 && expandedTokens.back().type == NUMBER) {
                 Token prevNum = expandedTokens.back();
@@ -105,7 +103,6 @@ bool extractConversion(std::vector<Token>& tokens, std::string& toUnit) {
 }
 
 void printConversionResult(double baseResult, const std::string& toUnit) {
-    // Format out of the base unit by dividing
     double finalResult = baseResult / units[toUnit].rate;
     std::cout << "= " << finalResult << " " << toUnit << '\n';
 }
