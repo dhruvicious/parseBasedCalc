@@ -7,6 +7,8 @@ The project demonstrates the core stages of expression evaluation: lexical analy
 ## Features
 
 - Interactive calculator prompt with input history
+- **Caret Syntax Error Highlighting:** Points out the exact character location of lexical and parsing errors in the CLI.
+- **Unit & Currency Conversion Mode:** Built-in engine to convert between different units (mass, length, time, volume) and live currencies (retrieved from Frankfurter API using `libcurl`).
 - Tokenizer for numbers, identifiers, operators, and parentheses
 - Recursive-descent parser for arithmetic expressions
 - Abstract syntax tree representation
@@ -17,6 +19,22 @@ The project demonstrates the core stages of expression evaluation: lexical analy
 - Makefile-based build process
 - Dockerfile for containerized builds and execution
 
+## Prerequisites
+
+To build locally, make sure you have standard development tools installed along with the following libraries:
+- `libreadline-dev` (for interactive history and readline support)
+- `libcurl4-openssl-dev` (for fetching live exchange rates)
+
+On Debian/Ubuntu:
+```sh
+sudo apt-get install g++ make libreadline-dev libcurl4-openssl-dev
+```
+
+On macOS (using Homebrew):
+```sh
+brew install readline curl
+```
+
 ## Build And Run
 
 ```sh
@@ -24,34 +42,48 @@ make
 ./calculator
 ```
 
-To show the tokens produced by the lexer before evaluation, run:
+### Command-line Options
 
+- **Token Inspection:** Show the tokens produced by the lexer before evaluation:
+  ```sh
+  ./calculator --tokens
+  ```
+- **AST Inspection:** Show the abstract syntax tree structure before evaluation:
+  ```sh
+  ./calculator --ast
+  ```
+- **Conversion Mode:** Enable unit and currency conversion mode:
+  ```sh
+  ./calculator --convert
+  ```
+
+### Conversion Mode Usage Examples
+
+In conversion mode, you can perform direct math in different units:
 ```sh
-./calculator --tokens
+convert > 10 mi to km
+= 16.0934 km
+
+convert > 5 kg + 500 g to lbs
+= 12.12541 lbs
+
+convert > 100 USD to EUR
+= 92.45 EUR  (live rate dependent)
 ```
 
-To show the abstract syntax tree produced by the parser before evaluation, run:
-
-```sh
-./calculator --ast
-```
-
-Or use Docker:
+### Docker Support
 
 Build the Docker image:
-
 ```sh
 docker build -t calculator .
 ```
 
 Run the container:
-
 ```sh
 docker run -it calculator
 ```
 
-To exit the calculator, type:
-
+To exit the calculator at any time, type:
 ```sh
 exit
 ```
